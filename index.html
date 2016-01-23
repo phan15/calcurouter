@@ -200,6 +200,12 @@ function initMap() {
           strokeWeight: 10
           };
 
+    var polylineOptionsBicycling = {
+          strokeColor: '#1AB2E8',
+          strokeOpacity: 1.0,
+          strokeWeight: 10
+          };
+
     var directionsDisplayWalking = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsWalking});
     directionsDisplayWalking.setMap(map);
 
@@ -209,12 +215,17 @@ function initMap() {
     var directionsDisplayDriving = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsDriving});
     directionsDisplayDriving.setMap(map);
 
+    var directionsDisplayBicycling = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsBicycling});
+    directionsDisplayBicycling.setMap(map);
+
     route(origin_place_id, destination_place_id, google.maps.TravelMode.WALKING,
           directionsService, directionsDisplayWalking);
     route(origin_place_id, destination_place_id, google.maps.TravelMode.TRANSIT,
           directionsService, directionsDisplayTransit);
     route(origin_place_id, destination_place_id, google.maps.TravelMode.DRIVING,
           directionsService, directionsDisplayDriving);
+    route(origin_place_id, destination_place_id, google.maps.TravelMode.BICYCLING,
+          directionsService, directionsDisplayBicycling);
   });
 
   function route(origin_place_id, destination_place_id, travel_mode,
