@@ -244,11 +244,34 @@ function initMap() {
         directionsDisplay.setDirections(response);
         document.getElementById("popup").style.visibility = "visible";
         console.log(response.routes);
+        populatePopup(response.routes, travel_mode);
       } else {
         window.alert('Directions request failed due to ' + status);
       }
     });
   }
+
+  function populatePopup(response, travelmode) {
+
+    switch(travelmode) {
+    case google.maps.TravelMode.DRIVING:
+        console.log(response[0].legs[0]);
+        break;
+    case google.maps.TravelMode.TRANIST:
+        console.log(response[0]);
+        break;
+    case google.maps.TravelMode.BICYCLING:
+        console.log(response[0].legs[0]);
+        break;
+    case google.maps.TravelMode.WALKING:
+        console.log(response[0].legs[0]);
+        break;
+    default:
+        console.log(response[0].legs[0]);
+    }
+
+  }
+
 }
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDiQd8NqaSESBmlH1ycGn4nFhijVsI9ykg&libraries=places&signed_in=true&callback=initMap" async defer>
