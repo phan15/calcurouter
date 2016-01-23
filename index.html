@@ -211,28 +211,30 @@ function initMap() {
     // the other place ID
     destination_place_id = place.place_id;
 
+    var strokeWeight = 7;
+
     var polylineOptionsWalking = {
           strokeColor: '#2AFFD3',
-          strokeOpacity: 1.0,
-          strokeWeight: 10
+          strokeOpacity: 0.7,
+          strokeWeight: strokeWeight
           };
 
     var polylineOptionsTransit = {
           strokeColor: '#1AE859',
-          strokeOpacity: 1.0,
-          strokeWeight: 10
+          strokeOpacity: 0.7,
+          strokeWeight: strokeWeight
           };
 
     var polylineOptionsDriving = {
           strokeColor: '#4FFF1C',
-          strokeOpacity: 1.0,
-          strokeWeight: 10
+          strokeOpacity: 0.7,
+          strokeWeight: strokeWeight
           };
 
     var polylineOptionsBicycling = {
           strokeColor: '#1AB2E8',
-          strokeOpacity: 1.0,
-          strokeWeight: 10
+          strokeOpacity: 0.7,
+          strokeWeight: strokeWeight
           };
 
     var directionsDisplayWalking = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsWalking});
