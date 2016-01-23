@@ -25,6 +25,7 @@
 }
 
 #origin-input,
+#waypoint1-input,
 #destination-input {
   background-color: #fff;
   font-family: Roboto;
@@ -96,6 +97,9 @@
     <input id="origin-input" class="controls" type="text"
         placeholder="Enter an origin location">
 
+    <input id="waypoint1-input" class="controls" type="text"
+        placeholder="Enter a waypoint">
+
     <input id="destination-input" class="controls" type="text"
         placeholder="Enter a destination location">
 
@@ -139,6 +143,7 @@
     <script>
 function initMap() {
   var origin_place_id = null;
+  var waypoint1_place_id = null;
   var destination_place_id = null;
   var travel_mode = google.maps.TravelMode.DRIVING;
   var map = new google.maps.Map(document.getElementById('map'), {
@@ -151,15 +156,21 @@ function initMap() {
   directionsDisplay.setMap(map);
 
   var origin_input = document.getElementById('origin-input');
+  var waypoint1_input = document.getElementById('waypoint1-input');
   var destination_input = document.getElementById('destination-input');
   var modes = document.getElementById('mode-selector');
 
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(origin_input);
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(waypoint1_input);
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(destination_input);
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(modes);
 
   var origin_autocomplete = new google.maps.places.Autocomplete(origin_input);
   origin_autocomplete.bindTo('bounds', map);
+  
+  var waypoint1_autocomplete = new google.maps.places.Autocomplete(waypoint1_input);
+  waypoint1_autocomplete.bindTo('bounds', map);
+
   var destination_autocomplete = new google.maps.places.Autocomplete(destination_input);
   destination_autocomplete.bindTo('bounds', map);
 
@@ -195,6 +206,21 @@ function initMap() {
     // If the place has a geometry, store its place ID and route if we have
     // the other place ID
     origin_place_id = place.place_id;
+    route(origin_place_id, destination_place_id, travel_mode,
+          directionsService, directionsDisplay);
+  });
+
+  waypoint1_autocomplete.addListener('place_changed', function() {
+    var place = waypoint1_autocomplete.getPlace();
+    if (!place.geometry) {
+      window.alert("Autocomplete's returned place contains no geometry");
+      return;
+    }
+    expandViewportToFitPlace(map, place);
+
+    // If the place has a geometry, store its place ID and route if we have
+    // the other place ID
+    waypoint1_place_id = place.place_id;
     route(origin_place_id, destination_place_id, travel_mode,
           directionsService, directionsDisplay);
   });
@@ -266,12 +292,26 @@ function initMap() {
     }
     console.log(travel_mode);
 
+    waypts = []
+    //waypoint1_place_id
+    if (waypoint1_place_id != null) {
+      waypts.push({
+        location: {'placeId': waypoint1_place_id},
+        stopover: true
+      });
+    }
+    console.log(waypts);
+    console.log(origin_place_id);
+
     directionsService.route({
       origin: {'placeId': origin_place_id},
       destination: {'placeId': destination_place_id},
+      waypoints: waypts,
+      optimizeWaypoints: false,
       travelMode: travel_mode
     }, function(response, status) {
       if (status === google.maps.DirectionsStatus.OK) {
+        
         directionsDisplay.setDirections(response);
         document.getElementById("popup").style.visibility = "visible";
         
