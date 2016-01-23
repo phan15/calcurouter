@@ -58,20 +58,36 @@
   visibility: hidden;
   width: 300px;
   height: 200px;
-  line-height: 12px;
   position: fixed;
   bottom: 5%; 
   left: 15%;
   margin-top: -100px;
   margin-left: -150px;
-  background-color: #f1c40f;
+  background-color: #4d90fe;
   border-radius: 5px;
   text-align: center;
   z-index: 11;
+  display: inline-block;
+  line-height: normal;
+}
+
+.text  {
+  color: #fff;
+  font-family: Roboto;
+  font-size: 18px;
+  font-weight: 500;
+  vertical-align: middle;
+  height: 200px;
 }
 
 .costitem {
   vertical-align: middle;
+}
+
+.flex-center-vertically {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
     </style>
   </head>
@@ -83,7 +99,7 @@
     <input id="destination-input" class="controls" type="text"
         placeholder="Enter a destination location">
 
-    <div id="popup" class="ecost">
+    <div id="popup" class="ecost flex-center-vertically text">
         <div id="cost_driving" class="costitem">Cost of driving:</div><br>
         <div id="cost_transit" class="costitem">Cost of transit:</div><br>
         <div id="cost_walking" class="costitem">Cost of walking:</div>
