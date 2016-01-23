@@ -100,9 +100,38 @@
         placeholder="Enter a destination location">
 
     <div id="popup" class="ecost flex-center-vertically text">
-        <div id="cost_driving" class="costitem">Cost of driving:</div><br>
-        <div id="cost_transit" class="costitem">Cost of transit:</div><br>
-        <div id="cost_walking" class="costitem">Cost of walking:</div>
+      <table>
+        <tr>
+          <td></td>
+          <td>Time</td>
+          <td>Distance</td>
+          <td>Money</td>
+        </tr>
+        <tr>
+          <td>DRIVING</td>
+          <td><div id="cost_driving_time" class="costitem">1</div></td>
+          <td><div id="cost_driving_transit" class="costitem">2</div></td>
+          <td><div id="cost_driving_money" class="costitem">3</div></td>
+        </tr>
+        <tr>
+          <td>TRANSIT</td>
+          <td><div id="cost_transit_time" class="costitem">4</div></td>
+          <td><div id="cost_transit_transit" class="costitem">5</div></td>
+          <td><div id="cost_transit_money" class="costitem">6</div></td>
+        </tr>
+        <tr>
+          <td>BICYCLING</td>
+          <td><div id="cost_bicycling_time" class="costitem">7</div></td>
+          <td><div id="cost_bicycling_transit" class="costitem">8</div></td>
+          <td><div id="cost_bicycling_money" class="costitem">9</div></td>
+        </tr>
+        <tr>
+          <td>WALKING</td>
+          <td><div id="cost_walking_time" class="costitem">10</div></td>
+          <td><div id="cost_walking_transit" class="costitem">11</div></td>
+          <td><div id="cost_walking_money" class="costitem">12</div></td>
+        </tr>
+      </table>
     </div>
 
     <div id="map"></div>
