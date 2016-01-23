@@ -361,7 +361,12 @@ function initMap() {
         
         populatePopup(response.routes, travel_mode);
       } else {
-        window.alert('Directions request failed due to ' + status);
+        var cells = document.getElementsByClassName('costitem');
+       for (var index in cells)
+        {
+          var entry = cells[index];
+          entry.innerHTML = '-';
+        }
       }
     });
   }
