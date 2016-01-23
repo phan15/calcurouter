@@ -319,19 +319,19 @@ function initMap() {
           };
 
     if ( directionsDisplayWalking ) directionsDisplayWalking.setMap(null); 
-    directionsDisplayWalking = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsWalking});
+    directionsDisplayWalking = new google.maps.DirectionsRenderer({suppressMarkers: false, polylineOptions: polylineOptionsWalking});
     directionsDisplayWalking.setMap(map);
 
     if ( directionsDisplayTransit ) directionsDisplayTransit.setMap(null);
-    directionsDisplayTransit = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsTransit});
+    directionsDisplayTransit = new google.maps.DirectionsRenderer({suppressMarkers: false, polylineOptions: polylineOptionsTransit});
     directionsDisplayTransit.setMap(map);
 
     if ( directionsDisplayDriving ) directionsDisplayDriving.setMap(null);
-    directionsDisplayDriving = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsDriving});
+    directionsDisplayDriving = new google.maps.DirectionsRenderer({suppressMarkers: false, polylineOptions: polylineOptionsDriving});
     directionsDisplayDriving.setMap(map);
 
     if ( directionsDisplayBicycling ) directionsDisplayBicycling.setMap(null);
-    directionsDisplayBicycling = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsBicycling});
+    directionsDisplayBicycling = new google.maps.DirectionsRenderer({suppressMarkers: false, polylineOptions: polylineOptionsBicycling});
     directionsDisplayBicycling.setMap(map);
 
     route(origin_place_id, destination_place_id, google.maps.TravelMode.WALKING,
