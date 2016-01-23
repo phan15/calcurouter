@@ -105,24 +105,13 @@
         <div id="cost_walking" class="costitem">Cost of walking:</div>
     </div>
 
-    <div id="mode-selector" class="controls">
-      <input type="radio" name="type" id="changemode-walking" checked="checked">
-      <label for="changemode-walking">Walking</label>
-      
-      <input type="radio" name="type" id="changemode-transit">
-      <label for="changemode-transit">Transit</label>
-      
-      <input type="radio" name="type" id="changemode-driving">
-      <label for="changemode-driving">Driving</label>
-    </div>
-
     <div id="map"></div>
 
     <script>
 function initMap() {
   var origin_place_id = null;
   var destination_place_id = null;
-  var travel_mode = google.maps.TravelMode.WALKING;
+  var travel_mode = google.maps.TravelMode.DRIVING;
   var map = new google.maps.Map(document.getElementById('map'), {
     mapTypeControl: false,
     center: {lat: 45.57, lng: -122.72},
@@ -145,17 +134,17 @@ function initMap() {
   var destination_autocomplete = new google.maps.places.Autocomplete(destination_input);
   destination_autocomplete.bindTo('bounds', map);
 
-  // Sets a listener on a radio button to change the filter type on Places
-  // Autocomplete.
-  function setupClickListener(id, mode) {
-    var radioButton = document.getElementById(id);
-    radioButton.addEventListener('click', function() {
-      travel_mode = mode;
-    });
-  }
-  setupClickListener('changemode-walking', google.maps.TravelMode.WALKING);
-  setupClickListener('changemode-transit', google.maps.TravelMode.TRANSIT);
-  setupClickListener('changemode-driving', google.maps.TravelMode.DRIVING);
+  // // Sets a listener on a radio button to change the filter type on Places
+  // // Autocomplete.
+  // function setupClickListener(id, mode) {
+  //   var radioButton = document.getElementById(id);
+  //   radioButton.addEventListener('click', function() {
+  //     travel_mode = mode;
+  //   });
+  // }
+  // setupClickListener('changemode-walking', google.maps.TravelMode.WALKING);
+  // setupClickListener('changemode-transit', google.maps.TravelMode.TRANSIT);
+  // setupClickListener('changemode-driving', google.maps.TravelMode.DRIVING);
 
   function expandViewportToFitPlace(map, place) {
     if (place.geometry.viewport) {
@@ -192,8 +181,40 @@ function initMap() {
     // If the place has a geometry, store its place ID and route if we have
     // the other place ID
     destination_place_id = place.place_id;
-    route(origin_place_id, destination_place_id, travel_mode,
-          directionsService, directionsDisplay);
+
+    var polylineOptionsWalking = {
+          strokeColor: '#2AFFD3',
+          strokeOpacity: 1.0,
+          strokeWeight: 10
+          };
+
+    var polylineOptionsTransit = {
+          strokeColor: '#1AE859',
+          strokeOpacity: 1.0,
+          strokeWeight: 10
+          };
+
+    var polylineOptionsDriving = {
+          strokeColor: '#4FFF1C',
+          strokeOpacity: 1.0,
+          strokeWeight: 10
+          };
+
+    var directionsDisplayWalking = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsWalking});
+    directionsDisplayWalking.setMap(map);
+
+    var directionsDisplayTransit = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsTransit});
+    directionsDisplayTransit.setMap(map);
+
+    var directionsDisplayDriving = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsDriving});
+    directionsDisplayDriving.setMap(map);
+
+    route(origin_place_id, destination_place_id, google.maps.TravelMode.WALKING,
+          directionsService, directionsDisplayWalking);
+    route(origin_place_id, destination_place_id, google.maps.TravelMode.TRANSIT,
+          directionsService, directionsDisplayTransit);
+    route(origin_place_id, destination_place_id, google.maps.TravelMode.DRIVING,
+          directionsService, directionsDisplayDriving);
   });
 
   function route(origin_place_id, destination_place_id, travel_mode,
@@ -201,10 +222,12 @@ function initMap() {
     if (!origin_place_id || !destination_place_id) {
       return;
     }
+    console.log(travel_mode);
+
     directionsService.route({
       origin: {'placeId': origin_place_id},
       destination: {'placeId': destination_place_id},
-      travelMode: google.maps.TravelMode.WALKING
+      travelMode: travel_mode
     }, function(response, status) {
       if (status === google.maps.DirectionsStatus.OK) {
         directionsDisplay.setDirections(response);
