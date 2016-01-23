@@ -213,6 +213,12 @@ th {
     <div id="map"></div>
 
     <script>
+
+var directionsDisplayWalking;
+var directionsDisplayTransit;
+var directionsDisplayDriving;
+var directionsDisplayBicycling;
+
 function initMap() {
   var origin_place_id = null;
   var destination_place_id = null;
@@ -271,8 +277,7 @@ function initMap() {
     // If the place has a geometry, store its place ID and route if we have
     // the other place ID
     origin_place_id = place.place_id;
-    route(origin_place_id, destination_place_id, travel_mode,
-          directionsService, directionsDisplay);
+    drawDirections(directionsService);
   });
 
   destination_autocomplete.addListener('place_changed', function() {
@@ -282,10 +287,12 @@ function initMap() {
       return;
     }
     expandViewportToFitPlace(map, place);
-
-    // If the place has a geometry, store its place ID and route if we have
-    // the other place ID
     destination_place_id = place.place_id;
+    drawDirections(directionsService);
+  });
+
+  function drawDirections(directionsService) {
+    if ( ! (origin_place_id  && destination_place_id && directionsService) )  return;
 
     var strokeWeight = 7;
 
@@ -313,16 +320,20 @@ function initMap() {
           strokeWeight: strokeWeight
           };
 
-    var directionsDisplayWalking = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsWalking});
+    if ( directionsDisplayWalking ) directionsDisplayWalking.setMap(null); 
+    directionsDisplayWalking = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsWalking});
     directionsDisplayWalking.setMap(map);
 
-    var directionsDisplayTransit = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsTransit});
+    if ( directionsDisplayTransit ) directionsDisplayTransit.setMap(null);
+    directionsDisplayTransit = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsTransit});
     directionsDisplayTransit.setMap(map);
 
-    var directionsDisplayDriving = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsDriving});
+    if ( directionsDisplayDriving ) directionsDisplayDriving.setMap(null);
+    directionsDisplayDriving = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsDriving});
     directionsDisplayDriving.setMap(map);
 
-    var directionsDisplayBicycling = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsBicycling});
+    if ( directionsDisplayBicycling ) directionsDisplayBicycling.setMap(null);
+    directionsDisplayBicycling = new google.maps.DirectionsRenderer({suppressMarkers: true, polylineOptions: polylineOptionsBicycling});
     directionsDisplayBicycling.setMap(map);
 
     route(origin_place_id, destination_place_id, google.maps.TravelMode.WALKING,
@@ -333,14 +344,13 @@ function initMap() {
           directionsService, directionsDisplayDriving);
     route(origin_place_id, destination_place_id, google.maps.TravelMode.BICYCLING,
           directionsService, directionsDisplayBicycling);
-  });
+  };
 
   function route(origin_place_id, destination_place_id, travel_mode,
                  directionsService, directionsDisplay) {
     if (!origin_place_id || !destination_place_id) {
       return;
     }
-    console.log(travel_mode);
 
     directionsService.route({
       origin: {'placeId': origin_place_id},
@@ -375,7 +385,11 @@ function initMap() {
         
         break;
     case google.maps.TravelMode.TRANSIT:
-        fare = response[0].fare.text;
+      console.log(response);
+        if(response[0].fare === undefined)
+          fare = '-';
+        else
+          fare = response[0].fare.text;
         time = response[0].legs[0].duration.text;
         distance = response[0].legs[0].distance.text;
         distance2 = response[0].legs[0].distance.value;
