@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Place Autocomplete</title>
+    <title>CalcuRouter</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <style>
@@ -57,8 +57,9 @@
 
 .ecost {
   visibility: hidden;
-  width: 300px;
-  height: 200px;
+  /*width: 300px;
+  height: 200px;*/
+  padding: 5px;
   position: fixed;
   bottom: 5%; 
   left: 15%;
@@ -76,14 +77,80 @@
   color: #fff;
   font-family: Roboto;
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 100;
   vertical-align: middle;
-  height: 200px;
+  /*height: 200px;*/
+}
+
+.transitHeading {
+  font-weight: 400;
+  min-width: 80px;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+.transitTitle {
+  font-weight: 400;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table tr:first-child th {
+  border-top: 0;
+}
+table tr:last-child td {
+  border-bottom: 0;
+}
+table tr td:first-child,
+table tr th:first-child {
+  border-left: 0;
+}
+table tr td:last-child,
+table tr th:last-child {
+  border-right: 0;
+}
+
+td {
+    border: 1px #80b0fe;
+    border-style: inset;
+    padding: 3px;
+}
+td.div {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+th {
+    border: 1px #80b0fe;
+    border-style: inset;
+    padding: 3px;
+    border-top: none;
 }
 
 .costitem {
   vertical-align: middle;
 }
+
+.legendItem {
+  width: 30px;
+}
+#cost_walking_color {
+  background-color: #2AFFD3;
+}
+
+#cost_transit_color {
+  background-color: #1AE859;
+}
+
+#cost_driving_color {
+  background-color: #4FFF1C;
+}
+
+#cost_bicycling_color {
+  background-color: #1AB2E8;
+}
+
 
 .flex-center-vertically {
   display: flex;
@@ -106,34 +173,43 @@
     <div id="popup" class="ecost flex-center-vertically text">
       <table>
         <tr>
-          <td></td>
-          <td>Time</td>
-          <td>Distance</td>
-          <td>Money</td>
+          <th></th>
+          <th class="transitHeading, legendItem"></th>
+          <th class="transitHeading">Time</th>
+          <th class="transitHeading">Distance</th>
+          <th class="transitHeading">Money</th>
+          <th class="transitHeading">Carbon</th>
         </tr>
         <tr>
-          <td>DRIVING</td>
-          <td><div id="cost_driving_time" class="costitem">1</div></td>
-          <td><div id="cost_driving_transit" class="costitem">2</div></td>
-          <td><div id="cost_driving_money" class="costitem">3</div></td>
+          <td class="transitTitle">Driving</td>
+          <td id="cost_driving_color" class="legendItem">    </td>
+          <td><div id="cost_driving_time" class="costitem">-</div></td>
+          <td><div id="cost_driving_distance" class="costitem">-</div></td>
+          <td><div id="cost_driving_money" class="costitem">-</div></td>
+          <td><div id="cost_driving_carbon" class="costitem">-</div></td>
         </tr>
         <tr>
-          <td>TRANSIT</td>
-          <td><div id="cost_transit_time" class="costitem">4</div></td>
-          <td><div id="cost_transit_transit" class="costitem">5</div></td>
-          <td><div id="cost_transit_money" class="costitem">6</div></td>
+          <td class="transitTitle">Transit</td>
+          <td id="cost_transit_color" class="legendItem">    </td>
+          <td><div id="cost_transit_time" class="costitem">-</div></td>
+          <td><div id="cost_transit_distance" class="costitem">-</div></td>
+          <td><div id="cost_transit_money" class="costitem">-</div></td>
+          <td><div id="cost_transit_carbon" class="costitem">-</div></td>
+        </tr>
+          <td class="transitTitle">Bicycling</td>
+          <td id="cost_bicycling_color" class="legendItem">    </td>
+          <td><div id="cost_bicycling_time" class="costitem">-</div></td>
+          <td><div id="cost_bicycling_distance" class="costitem">-</div></td>
+          <td><div id="cost_bicycling_money" class="costitem">-</div></td>
+          <td><div id="cost_bicycling_carbon" class="costitem">-</div></td>
         </tr>
         <tr>
-          <td>BICYCLING</td>
-          <td><div id="cost_bicycling_time" class="costitem">7</div></td>
-          <td><div id="cost_bicycling_transit" class="costitem">8</div></td>
-          <td><div id="cost_bicycling_money" class="costitem">9</div></td>
-        </tr>
-        <tr>
-          <td>WALKING</td>
-          <td><div id="cost_walking_time" class="costitem">10</div></td>
-          <td><div id="cost_walking_transit" class="costitem">11</div></td>
-          <td><div id="cost_walking_money" class="costitem">12</div></td>
+          <td class="transitTitle">Walking</td>
+          <td id="cost_walking_color" class="legendItem">    </td>
+          <td><div id="cost_walking_time" class="costitem">-</div></td>
+          <td><div id="cost_walking_distance" class="costitem">-</div></td>
+          <td><div id="cost_walking_money" class="costitem">-</div></td>
+          <td><div id="cost_walking_carbon" class="costitem">-</div></td>
         </tr>
       </table>
     </div>
@@ -323,29 +399,50 @@ function initMap() {
   }
 
   function populatePopup(response, travelmode) {
-
     var costPerMile, fare, time, money, distance;
+    var metersPerMile = 0.000621371;
     costPerMile = 0.54;
     switch(travelmode) {
     case google.maps.TravelMode.DRIVING:
-        console.log(response[0].legs[0]);
-        time = "";
-        money = distance * costPerMile;
-        distance = ""
+        time = response[0].legs[0].duration.text;
+        money = parseFloat(response[0].legs[0].distance.value * metersPerMile * costPerMile).toFixed(2);
+        distance = response[0].legs[0].distance.text;
+        distance2 = response[0].legs[0].distance.value;
+        document.getElementById("cost_driving_time").innerHTML = time;
+        document.getElementById("cost_driving_money").innerHTML = "$" + money;
+        document.getElementById("cost_driving_distance").innerHTML = distance;
+        document.getElementById("cost_driving_carbon").innerHTML= (distance2 * metersPerMile * 0.411 * 2.2).toFixed(2) + " lbs" ;
+        
         break;
     case google.maps.TravelMode.TRANSIT:
-        console.log(response[0].fare.text);
         fare = response[0].fare.text;
-        time = "";
-        money = "";
-        distance = ""
+        time = response[0].legs[0].duration.text;
+        distance = response[0].legs[0].distance.text;
+        distance2 = response[0].legs[0].distance.value;
+        document.getElementById("cost_transit_money").innerHTML = fare;
+        document.getElementById("cost_transit_time").innerHTML = time;
+        document.getElementById("cost_transit_distance").innerHTML = distance;
+        document.getElementById("cost_transit_carbon").innerHTML = (distance2 * metersPerMile * 0.411 * 2.2 / 2.0).toFixed(2) + " lbs";
         break;
     case google.maps.TravelMode.BICYCLING:
-        //console.log(response[0]);
+        time = response[0].legs[0].duration.text;
+        distance = response[0].legs[0].distance.text;
+        distance2 = response[0].legs[0].distance.value;
+        document.getElementById("cost_bicycling_money").innerHTML = "$0.00";
+        document.getElementById("cost_bicycling_time").innerHTML = time;
+        document.getElementById("cost_bicycling_distance").innerHTML = distance;
+        document.getElementById("cost_bicycling_carbon").innerHTML= (distance2 * metersPerMile * 0.050 * 2.2).toFixed(2) + " lbs" ;
+        
+        break;
     case google.maps.TravelMode.WALKING:
-        console.log(response[0]);
         time = response[0].legs[0].duration.text; // miles and mins
         distance = response[0].legs[0].distance.text; // miles
+        distance2 = response[0].legs[0].distance.value;
+        document.getElementById("cost_walking_money").innerHTML = "$0.00";
+        document.getElementById("cost_walking_time").innerHTML = time;
+        document.getElementById("cost_walking_distance").innerHTML = distance;
+        document.getElementById("cost_walking_carbon").innerHTML= (distance2 * metersPerMile * 1.0 / 7.0).toFixed(2) + " lbs" ;
+
         break;
     default:
         //console.log(response[0].legs[0]);
