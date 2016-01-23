@@ -243,7 +243,7 @@ function initMap() {
       if (status === google.maps.DirectionsStatus.OK) {
         directionsDisplay.setDirections(response);
         document.getElementById("popup").style.visibility = "visible";
-        console.log(response.routes);
+        
         populatePopup(response.routes, travel_mode);
       } else {
         window.alert('Directions request failed due to ' + status);
@@ -253,21 +253,31 @@ function initMap() {
 
   function populatePopup(response, travelmode) {
 
+    var costPerMile, fare, time, money, distance;
+    costPerMile = 0.54;
     switch(travelmode) {
     case google.maps.TravelMode.DRIVING:
         console.log(response[0].legs[0]);
+        time = "";
+        money = distance * costPerMile;
+        distance = ""
         break;
-    case google.maps.TravelMode.TRANIST:
-        console.log(response[0]);
+    case google.maps.TravelMode.TRANSIT:
+        console.log(response[0].fare.text);
+        fare = response[0].fare.text;
+        time = "";
+        money = "";
+        distance = ""
         break;
     case google.maps.TravelMode.BICYCLING:
-        console.log(response[0].legs[0]);
-        break;
+        //console.log(response[0]);
     case google.maps.TravelMode.WALKING:
-        console.log(response[0].legs[0]);
+        console.log(response[0]);
+        time = response[0].legs[0].duration.text; // miles and mins
+        distance = response[0].legs[0].distance.text; // miles
         break;
     default:
-        console.log(response[0].legs[0]);
+        //console.log(response[0].legs[0]);
     }
 
   }
