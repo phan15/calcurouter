@@ -110,25 +110,25 @@
         <tr>
           <td>DRIVING</td>
           <td><div id="cost_driving_time" class="costitem">1</div></td>
-          <td><div id="cost_driving_transit" class="costitem">2</div></td>
+          <td><div id="cost_driving_distance" class="costitem">2</div></td>
           <td><div id="cost_driving_money" class="costitem">3</div></td>
         </tr>
         <tr>
           <td>TRANSIT</td>
           <td><div id="cost_transit_time" class="costitem">4</div></td>
-          <td><div id="cost_transit_transit" class="costitem">5</div></td>
+          <td><div id="cost_transit_distance" class="costitem">5</div></td>
           <td><div id="cost_transit_money" class="costitem">6</div></td>
         </tr>
         <tr>
           <td>BICYCLING</td>
           <td><div id="cost_bicycling_time" class="costitem">7</div></td>
-          <td><div id="cost_bicycling_transit" class="costitem">8</div></td>
+          <td><div id="cost_bicycling_distance" class="costitem">8</div></td>
           <td><div id="cost_bicycling_money" class="costitem">9</div></td>
         </tr>
         <tr>
           <td>WALKING</td>
           <td><div id="cost_walking_time" class="costitem">10</div></td>
-          <td><div id="cost_walking_transit" class="costitem">11</div></td>
+          <td><div id="cost_walking_distance" class="costitem">11</div></td>
           <td><div id="cost_walking_money" class="costitem">12</div></td>
         </tr>
       </table>
@@ -283,29 +283,38 @@ function initMap() {
   }
 
   function populatePopup(response, travelmode) {
-
     var costPerMile, fare, time, money, distance;
     costPerMile = 0.54;
     switch(travelmode) {
     case google.maps.TravelMode.DRIVING:
-        console.log(response[0].legs[0]);
-        time = "";
-        money = distance * costPerMile;
-        distance = ""
+        time = response[0].legs[0].duration.text;
+        money = parseFloat(response[0].legs[0].distance.value * 0.000621371 * costPerMile).toFixed(2);
+        distance = response[0].legs[0].distance.text;
+        document.getElementById("cost_driving_time").innerHTML = time;
+        document.getElementById("cost_driving_money").innerHTML = "$" + money;
+        document.getElementById("cost_driving_distance").innerHTML = distance;
         break;
     case google.maps.TravelMode.TRANSIT:
-        console.log(response[0].fare.text);
         fare = response[0].fare.text;
-        time = "";
-        money = "";
-        distance = ""
+        time = response[0].legs[0].duration.text;
+        distance = response[0].legs[0].distance.text;
+        document.getElementById("cost_transit_money").innerHTML = fare;
+        document.getElementById("cost_transit_time").innerHTML = time;
+        document.getElementById("cost_transit_distance").innerHTML = distance;
         break;
     case google.maps.TravelMode.BICYCLING:
-        //console.log(response[0]);
+        time = response[0].legs[0].duration.text;
+        distance = response[0].legs[0].distance.text;
+        document.getElementById("cost_bicycling_money").innerHTML = "$0.00";
+        document.getElementById("cost_bicycling_time").innerHTML = time;
+        document.getElementById("cost_bicycling_distance").innerHTML = distance;
+        break;
     case google.maps.TravelMode.WALKING:
-        console.log(response[0]);
         time = response[0].legs[0].duration.text; // miles and mins
         distance = response[0].legs[0].distance.text; // miles
+        document.getElementById("cost_walking_money").innerHTML = "$0.00";
+        document.getElementById("cost_walking_time").innerHTML = time;
+        document.getElementById("cost_walking_distance").innerHTML = distance;
         break;
     default:
         //console.log(response[0].legs[0]);
